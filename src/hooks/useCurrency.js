@@ -26,9 +26,10 @@ export function useCurrency() {
   const [currencies, setCurrencies] = useState({});
   const [rate, setRate] = useState(null);
   const [rateDate, setRateDate] = useState(null);
-  const [historicalData, setHistoricalData] = useState({});
+  const [historicalData, setHistoricalData] = useState([]);
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
   const [loading, setLoading] = useState(false);
+  const [historicalLoading, setHistoricalLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchCurrencies = useCallback(async () => {
@@ -58,8 +59,7 @@ export function useCurrency() {
 
   const fetchHistoricalData = useCallback(async () => {
     if (!baseCurrency || !targetCurrency) return;
-    setLoading(true);
-    setError(null);
+    setHistoricalLoading(true);
     try {
       const { startDate, endDate } = getDateRange(selectedPeriod);
       const data = await getHistoricalRates(startDate, endDate, baseCurrency, targetCurrency);
@@ -72,10 +72,10 @@ export function useCurrency() {
         .sort((a, b) => new Date(a.date) - new Date(b.date));
       setHistoricalData(chartData);
     } catch (err) {
-      setError('Failed to fetch historical data');
-      setHistoricalData({});
+      console.warn('Historical data fetch failed:', err);
+      setHistoricalData([]);
     } finally {
-      setLoading(false);
+      setHistoricalLoading(false);
     }
   }, [baseCurrency, targetCurrency, selectedPeriod]);
 
@@ -83,22 +83,6 @@ export function useCurrency() {
     setBaseCurrency(targetCurrency);
     setTargetCurrency(baseCurrency);
   }, [baseCurrency, targetCurrency]);
-
-  const updateAmount = useCallback((newAmount) => {
-    setAmount(newAmount);
-  }, []);
-
-  const updatePeriod = useCallback((period) => {
-    setSelectedPeriod(period);
-  }, []);
-
-  const updateBaseCurrency = useCallback((currency) => {
-    setBaseCurrency(currency);
-  }, []);
-
-  const updateTargetCurrency = useCallback((currency) => {
-    setTargetCurrency(currency);
-  }, []);
 
   useEffect(() => {
     fetchCurrencies();
@@ -127,11 +111,12 @@ export function useCurrency() {
     historicalData,
     selectedPeriod,
     loading,
+    historicalLoading,
     error,
     convertedAmount,
     swapCurrencies,
     updateAmount: setAmount,
-    updatePeriod,
+    updatePeriod: setSelectedPeriod,
     updateBaseCurrency: setBaseCurrency,
     updateTargetCurrency: setTargetCurrency,
     refetch: fetchLatestRate,

@@ -66,7 +66,7 @@ export function CurrencyConverter({
               min="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full pl-10 pr-4 py-3.5 text-2xl font-medium text-slate-900 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all placeholder:text-slate-400"
+              className="w-full pl-12 pr-4 py-3.5 text-2xl font-medium text-slate-900 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all placeholder:text-slate-400"
               placeholder="0.00"
               aria-label="Valor a converter"
             />
