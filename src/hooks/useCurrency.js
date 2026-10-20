@@ -34,6 +34,7 @@ export function useCurrency() {
   const [loading, setLoading] = useState(false);
   const [historicalLoading, setHistoricalLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [apiStatus, setApiStatus] = useState('idle');
 
   const fetchCurrencies = useCallback(async () => {
     try {
@@ -47,14 +48,17 @@ export function useCurrency() {
   const fetchLatestRate = useCallback(async () => {
     if (!baseCurrency || !targetCurrency) return;
     setLoading(true);
+    setApiStatus('loading');
     setError(null);
     try {
       const data = await getLatestRates(baseCurrency, targetCurrency);
       setRate(data.rates?.[targetCurrency] || null);
       setRateDate(data.date);
+      setApiStatus('success');
     } catch (err) {
       setError('Failed to fetch latest rate');
       setRate(null);
+      setApiStatus('error');
     } finally {
       setLoading(false);
     }
@@ -121,6 +125,7 @@ export function useCurrency() {
     loading,
     historicalLoading,
     error,
+    apiStatus,
     convertedAmount,
     swapCurrencies,
     updateAmount: setAmount,
