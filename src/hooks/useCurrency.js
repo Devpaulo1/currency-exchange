@@ -125,7 +125,7 @@ export function useCurrency() {
     exchangeRate: rate,
     date: rateDate,
     historicalData,
-    selectedPeriod,
+    period: selectedPeriod,
     setPeriod: setSelectedPeriod,
     loading,
     historicalLoading,
