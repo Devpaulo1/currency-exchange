@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getCurrencies, getLatestRates, getHistoricalRates } from '../services/currencyService';
 
 const PERIOD_DAYS = {
@@ -64,8 +64,11 @@ export function useCurrency() {
     }
   }, [baseCurrency, targetCurrency]);
 
+  const historicalReqId = useRef(0);
+
   const fetchHistoricalData = useCallback(async () => {
     if (!baseCurrency || !targetCurrency) return;
+    const reqId = ++historicalReqId.current;
     setHistoricalLoading(true);
     try {
       const { startDate, endDate } = getDateRange(selectedPeriod);
@@ -77,12 +80,14 @@ export function useCurrency() {
           rate: values[targetCurrency],
         }))
         .sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (reqId !== historicalReqId.current) return;
       setHistoricalData(chartData);
     } catch (err) {
+      if (reqId !== historicalReqId.current) return;
       console.warn('Historical data fetch failed:', err);
       setHistoricalData([]);
     } finally {
-      setHistoricalLoading(false);
+      if (reqId === historicalReqId.current) setHistoricalLoading(false);
     }
   }, [baseCurrency, targetCurrency, selectedPeriod]);
 

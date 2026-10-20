@@ -2,7 +2,7 @@ import { useCurrency } from './hooks/useCurrency';
 import { CurrencyConverter } from './components/CurrencyConverter';
 import { HistoricalChart } from './components/HistoricalChart';
 import { HistoricalTable } from './components/HistoricalTable';
-import { Wifi, WifiOff, Shield, Loader2, Globe } from 'lucide-react';
+import { Wifi, WifiOff, Shield, Loader2 } from 'lucide-react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 function AppContent() {
@@ -55,44 +55,41 @@ function AppContent() {
       <header className={`relative sticky top-0 z-40 backdrop-blur-md border-b border-slate-800/50 bg-slate-900/50`}>
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <img 
                 src="/images/image-1.jpg" 
                 alt="Fintech Pro" 
-                className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500/50 shadow-md"
+                className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-emerald-500/50 shadow-md flex-shrink-0"
               />
-              <div>
-                <h1 className={`text-xl font-bold tracking-tight text-slate-100`}>{t('appTitle')}</h1>
-                <p className={`text-xs text-slate-400`}>{t('appSubtitle')}</p>
+              <div className="min-w-0">
+                <h1 className={`text-base sm:text-xl font-bold tracking-tight text-slate-100 truncate`}>{t('appTitle')}</h1>
+                <p className={`hidden sm:block text-xs text-slate-400`}>{t('appSubtitle')}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${statusConfig.bg} ${statusConfig.color} transition-all`}>
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <div className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-full ${statusConfig.bg} ${statusConfig.color} transition-all`}>
                 <StatusIcon className="w-4 h-4" />
-                <span className="text-xs font-medium">{statusConfig.label}</span>
+                <span className="hidden sm:inline text-xs font-medium">{statusConfig.label}</span>
               </div>
-              
+
               {/* Language Selector */}
-              <div className="relative group">
-                <button
-                  className={`relative p-2 rounded-xl transition-all flex items-center gap-1.5 bg-slate-800/50 border border-slate-700/50 text-slate-400 hover:text-slate-100 hover:border-emerald-500/50 hover:bg-emerald-500/10`}
-                  aria-label={t('languageSelector')}
-                >
-                  <Globe className="w-5 h-5" />
-                  <span className="text-xs font-medium">{language.toUpperCase()}</span>
-                </button>
-                <div className={`absolute right-0 top-full mt-2 w-36 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 bg-slate-900 border border-slate-700`}>
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => setLanguage(lang.code)}
-                      className={`w-full px-3 py-2 text-sm font-medium flex items-center gap-2 transition-colors ${language === lang.code ? ('bg-emerald-500/20 text-emerald-400') : ('text-slate-300 hover:bg-slate-800/50')}`}
-                    >
-                      <span>{lang.flag}</span>
-                      <span>{lang.label}</span>
-                    </button>
-                  ))}
-                </div>
+              <div className="flex items-center gap-1 p-1 rounded-xl backdrop-blur-sm bg-slate-900/50 border border-slate-700/50" role="group" aria-label={t('languageSelector')}>
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    onClick={() => setLanguage(lang.code)}
+                    aria-pressed={language === lang.code}
+                    className={`px-2 sm:px-2.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1.5 border ${
+                      language === lang.code
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 shadow-lg'
+                        : 'text-slate-400 border-transparent hover:text-slate-100 hover:bg-slate-800/50 active:bg-slate-800/70'
+                    }`}
+                  >
+                    <span>{lang.flag}</span>
+                    <span className="hidden sm:inline">{lang.label}</span>
+                  </button>
+                ))}
               </div>
 
             </div>

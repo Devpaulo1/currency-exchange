@@ -156,7 +156,7 @@ export function HistoricalChart({
           </div>
         </div>
 
-        <div className={`flex-shrink-0 flex items-center gap-1 backdrop-blur-sm rounded-xl p-1 bg-slate-900/50 border border-slate-700/50`} role="tablist">
+        <div className={`w-full sm:w-auto flex flex-wrap justify-center sm:justify-end gap-1 backdrop-blur-sm rounded-xl p-1 bg-slate-900/50 border border-slate-700/50`} role="tablist">
           {PERIOD_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -164,12 +164,11 @@ export function HistoricalChart({
               role="tab"
               aria-selected={period === opt.value}
               onClick={() => setPeriod(opt.value)}
-              disabled={historicalLoading}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${
+              className={`px-3 py-1.5 text-xs rounded-lg transition-all duration-200 border ${
                 period === opt.value
-                  ? `${colors.periodActiveBg} ${colors.periodActiveText} ${colors.periodActiveBorder} shadow-lg`
-                  : colors.periodInactive
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  ? `${colors.periodActiveBg} ${colors.periodActiveText} ${colors.periodActiveBorder} border-emerald-500/40 shadow-lg ring-1 ring-emerald-400/30 font-semibold`
+                  : `border-transparent ${colors.periodInactive} active:bg-slate-800/70`
+              }`}
             >
               {opt.label}
             </button>
