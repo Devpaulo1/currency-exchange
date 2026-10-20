@@ -246,7 +246,7 @@ export function HistoricalTable({
       <div className="relative z-10 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700/30">
+            <tr className="border-b border-slate-700/50 bg-slate-950/60">
               <th 
                 className="px-4 py-3 text-left font-medium text-slate-400 cursor-pointer select-none flex items-center gap-1 hover:text-emerald-400 transition-colors"
                 onClick={() => handleSort('date')}

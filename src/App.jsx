@@ -44,7 +44,7 @@ function App() {
       </div>
 
       {/* Header */}
-      <header className="relative sticky top-0 z-40 backdrop-blur-md border-b border-slate-800/50 bg-slate-900/50">
+      <header className="relative sticky top-0 z-40 backdrop-blur-md border-b border-slate-800/60 bg-slate-950/70">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
