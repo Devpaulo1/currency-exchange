@@ -2,9 +2,9 @@ import { useCurrency } from './hooks/useCurrency';
 import { CurrencyConverter } from './components/CurrencyConverter';
 import { HistoricalChart } from './components/HistoricalChart';
 import { HistoricalTable } from './components/HistoricalTable';
-import { Wifi, WifiOff, Shield, Loader2, Zap } from 'lucide-react';
+import { Wifi, WifiOff, Shield, Loader2 } from 'lucide-react';
 
-function App() {
+function AppContent() {
   const {
     historicalData,
     historicalLoading,
@@ -31,37 +31,43 @@ function App() {
     }
   };
 
-  const statusConfig = getApiStatusConfig();
-  const StatusIcon = statusConfig.icon;
+  const ApiStatus = () => {
+    const config = getApiStatusConfig();
+    const Icon = config.icon;
+    return (
+      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${config.bg} ${config.color} transition-all`}>
+        <Icon className="w-4 h-4" />
+        <span className="text-xs font-medium">{config.label}</span>
+      </div>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-[#060913] transition-colors duration-500">
+    <div className={`min-h-screen transition-colors duration-500 bg-[#060913]`}>
       {/* Cyber Grid Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-emerald-500/10 via-transparent to-cyan-500/5 rounded-full blur-3xl -translate-y-1/2" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-gradient-to-tr from-cyan-500/5 via-transparent to-emerald-500/5 rounded-full blur-3xl translate-y-1/2" />
+        <div className={'absolute inset-0 bg-[linear-gradient(to_right,rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:40px_40px]'} />
+        <div className={'absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-emerald-500/10 via-transparent to-cyan-500/5 rounded-full blur-3xl -translate-y-1/2'} />
+        <div className={'absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-gradient-to-tr from-cyan-500/5 via-transparent to-emerald-500/5 rounded-full blur-3xl translate-y-1/2'} />
       </div>
 
       {/* Header */}
-      <header className="relative sticky top-0 z-40 backdrop-blur-md border-b border-slate-800/60 bg-slate-950/70">
+      <header className={`relative sticky top-0 z-40 backdrop-blur-md border-b border-slate-800/50 bg-slate-900/50`}>
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-                <Zap className="w-6 h-6 text-slate-950" />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 opacity-20 blur" />
-              </div>
+              <img 
+                src="/images/image-1.jpg" 
+                alt="Fintech Pro" 
+                className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500/50 shadow-md"
+              />
               <div>
-                <h1 className="text-xl font-bold text-slate-100 tracking-tight">Currency Exchange</h1>
-                <p className="text-xs text-slate-400">Taxas em tempo real via Frankfurter API</p>
+                <h1 className={`text-xl font-bold tracking-tight text-slate-100`}>Currency Exchange</h1>
+                <p className={`text-xs text-slate-400`}>Taxas em tempo real via Frankfurter API</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${statusConfig.bg} ${statusConfig.color} transition-all`}>
-                <StatusIcon className="w-4 h-4" />
-                <span className="text-xs font-medium">{statusConfig.label}</span>
-              </div>
+              <ApiStatus />
             </div>
           </div>
         </div>
@@ -82,8 +88,8 @@ function App() {
           baseCurrency={baseCurrency}
           targetCurrency={targetCurrency}
         />
-
-        <footer className="relative z-10 text-center text-xs text-slate-500 py-4 border-t border-slate-800/50">
+        
+        <footer className={`relative z-10 text-center text-xs py-4 border-t text-slate-500 border-slate-800/50`}>
           <p>Dados fornecidos por <a href="https://api.frankfurter.dev" target="_blank" rel="noopener noreferrer" className="underline hover:text-emerald-400 transition-colors">Frankfurter API</a></p>
           <p className="mt-1">Desenvolvido com React + Tailwind v4 + Recharts</p>
         </footer>
@@ -92,4 +98,4 @@ function App() {
   );
 }
 
-export default App;
+export default AppContent;

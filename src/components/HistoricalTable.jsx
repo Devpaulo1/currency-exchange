@@ -112,10 +112,10 @@ export function HistoricalTable({
   };
 
   const SortIcon = ({ columnKey }) => {
-    if (sortConfig.key !== columnKey) return <ChevronsUpDown className="w-4 h-4 text-slate-500" />;
+    if (sortConfig.key !== columnKey) return <ChevronsUpDown className={`w-4 h-4 text-slate-500`} />;
     return sortConfig.direction === 'asc' 
-      ? <ChevronUp className="w-4 h-4 text-emerald-400" /> 
-      : <ChevronDown className="w-4 h-4 text-emerald-400" />;
+      ? <ChevronUp className="w-4 h-4 text-emerald-500" /> 
+      : <ChevronDown className="w-4 h-4 text-emerald-500" />;
   };
 
   const getRateChangeClass = (index) => {
@@ -133,29 +133,29 @@ export function HistoricalTable({
     const prevRate = filteredData[index - 1]?.rate;
     const currRate = filteredData[index]?.rate;
     if (!prevRate || !currRate) return null;
-    if (currRate > prevRate) return <span className="ml-1 text-emerald-400">▲</span>;
-    if (currRate < prevRate) return <span className="ml-1 text-red-400">▼</span>;
+    if (currRate > prevRate) return <span className={`ml-1 text-emerald-400`}>▲</span>;
+    if (currRate < prevRate) return <span className={`ml-1 text-red-400`}>▼</span>;
     return null;
   };
 
   return (
     <section
       aria-labelledby="table-title"
-      className="relative bg-slate-900/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl shadow-emerald-500/5 overflow-hidden"
+      className={`relative rounded-2xl p-6 shadow-xl overflow-hidden bg-slate-900/50 backdrop-blur-md border border-slate-700/50 shadow-emerald-500/5`}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 pointer-events-none" />
+      <div className={`absolute inset-0 pointer-events-none bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5`} />
       
       <h2 id="table-title" className="sr-only">Tabela de Cotações Históricas</h2>
 
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            {baseFlagUrl && <img src={baseFlagUrl} alt="" className="w-5 h-3 rounded ring-1 ring-slate-700" loading="lazy" />}
-            <span className="text-slate-300">→</span>
-            {targetFlagUrl && <img src={targetFlagUrl} alt="" className="w-5 h-3 rounded ring-1 ring-slate-700" loading="lazy" />}
+            {baseFlagUrl && <img src={baseFlagUrl} alt={baseCurrency} className="w-5 h-3 rounded ring-1" loading="lazy" />}
+            <span className={'text-slate-300'}>→</span>
+            {targetFlagUrl && <img src={targetFlagUrl} alt={targetCurrency} className="w-5 h-3 rounded ring-1" loading="lazy" />}
           </div>
-          <h3 className="text-lg font-semibold text-slate-100">Tabela de Cotações</h3>
-          <span className="px-2 py-0.5 text-xs font-mono rounded bg-slate-900/50 border border-slate-700/50 text-slate-400">
+          <h3 className={`text-lg font-semibold text-slate-100`}>Tabela de Cotações</h3>
+          <span className={`px-2 py-0.5 text-xs font-mono rounded bg-slate-900/50 border border-slate-700/50 text-slate-400`}>
             {filteredData.length} registro{filteredData.length !== 1 ? 's' : ''}
           </span>
         </div>
@@ -166,7 +166,7 @@ export function HistoricalTable({
             onClick={() => setShowFilters(!showFilters)}
             className={`px-3 py-1.5 text-sm font-medium rounded-xl transition-all flex items-center gap-1.5 ${
               showFilters
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30'
                 : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 border border-slate-700/50'
             }`}
           >
@@ -187,45 +187,45 @@ export function HistoricalTable({
       </div>
 
       {showFilters && (
-        <div className="relative z-10 mb-6 p-4 rounded-xl space-y-3 bg-slate-900/50 backdrop-blur-sm border border-slate-700/30">
+        <div className={`relative z-10 mb-6 p-4 rounded-xl space-y-3 bg-slate-900/50 backdrop-blur-sm border border-slate-700/30`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Data Inicial</label>
+              <label className={`block text-xs font-medium mb-1 text-slate-400`}>Data Inicial</label>
               <input
                 type="date"
                 value={filters.dateFrom}
                 onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                className={`w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all`}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Data Final</label>
+              <label className={`block text-xs font-medium mb-1 text-slate-400`}>Data Final</label>
               <input
                 type="date"
                 value={filters.dateTo}
                 onChange={(e) => handleFilterChange('dateTo', e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                className={`w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all`}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Cotação Mínima</label>
+              <label className={`block text-xs font-medium mb-1 text-slate-400`}>Cotação Mínima</label>
               <input
                 type="number"
                 step="0.0001"
                 value={filters.rateMin}
                 onChange={(e) => handleFilterChange('rateMin', e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                className={`w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all`}
                 placeholder="Ex: 5.0"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Cotação Máxima</label>
+              <label className={`block text-xs font-medium mb-1 text-slate-400`}>Cotação Máxima</label>
               <input
                 type="number"
                 step="0.0001"
                 value={filters.rateMax}
                 onChange={(e) => handleFilterChange('rateMax', e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                className={`w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all`}
                 placeholder="Ex: 6.0"
               />
             </div>
@@ -234,7 +234,7 @@ export function HistoricalTable({
             <button
               type="button"
               onClick={clearFilters}
-              className="text-sm flex items-center gap-1 text-slate-400 hover:text-emerald-400 transition-colors"
+              className={`text-sm flex items-center gap-1 transition-colors text-slate-400 hover:text-emerald-400`}
             >
               <FilterX className="w-4 h-4" />
               Limpar filtros
@@ -246,27 +246,27 @@ export function HistoricalTable({
       <div className="relative z-10 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700/50 bg-slate-950/60">
+            <tr className={`border-b border-slate-700/30`}>
               <th 
-                className="px-4 py-3 text-left font-medium text-slate-400 cursor-pointer select-none flex items-center gap-1 hover:text-emerald-400 transition-colors"
+                className={`px-4 py-3 text-left font-medium cursor-pointer select-none flex items-center gap-1 transition-colors text-slate-400 hover:text-emerald-400`}
                 onClick={() => handleSort('date')}
               >
                 Data <SortIcon columnKey="date" />
               </th>
-              <th className="px-4 py-3 text-left font-medium text-slate-400">Par</th>
+              <th className={`px-4 py-3 text-left font-medium text-slate-400`}>Par</th>
               <th 
-                className="px-4 py-3 text-right font-medium text-slate-400 cursor-pointer select-none flex items-center justify-end gap-1 hover:text-emerald-400 transition-colors"
+                className={`px-4 py-3 text-right font-medium cursor-pointer select-none flex items-center justify-end gap-1 transition-colors text-slate-400 hover:text-emerald-400`}
                 onClick={() => handleSort('rate')}
               >
                 Cotação <SortIcon columnKey="rate" />
               </th>
-              <th className="px-4 py-3 text-center font-medium text-slate-400 w-16">Variação</th>
+              <th className={`px-4 py-3 text-center font-medium w-16 text-slate-400`}>Variação</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-700/20">
+          <tbody className={`divide-y divide-slate-700/20`}>
             {filteredData.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-12 text-center text-slate-500">
+                <td colSpan={4} className={`px-4 py-12 text-center text-slate-500`}>
                   {historicalData.length === 0 
                     ? 'Sem dados históricos para o período selecionado' 
                     : 'Nenhum registro encontrado com os filtros atuais'}
@@ -276,17 +276,17 @@ export function HistoricalTable({
               filteredData.map((item, index) => (
                 <tr 
                   key={`${item.date}-${index}`} 
-                  className="transition-all duration-200 hover:bg-emerald-500/5 hover:border-l-4 hover:border-emerald-500/30"
+                  className={`transition-all duration-200 hover:bg-emerald-500/5 hover:border-l-4 hover:border-emerald-500/30`}
                 >
-                  <td className="px-4 py-3 font-mono text-slate-200 whitespace-nowrap">{formatDate(item.date)}</td>
+                  <td className={`px-4 py-3 font-mono whitespace-nowrap text-slate-200`}>{formatDate(item.date)}</td>
                   <td className="px-4 py-3 flex items-center gap-2">
-                    {baseFlagUrl && <img src={baseFlagUrl} alt="" className="w-5 h-3 rounded ring-1 ring-slate-700" loading="lazy" />}
-                    <span className="text-slate-200 font-medium">{baseCurrency}</span>
-                    <span className="text-slate-500">→</span>
-                    {targetFlagUrl && <img src={targetFlagUrl} alt="" className="w-5 h-3 rounded ring-1 ring-slate-700" loading="lazy" />}
-                    <span className="text-slate-200 font-medium">{targetCurrency}</span>
+                    {baseFlagUrl && <img src={baseFlagUrl} alt={baseCurrency} className={`w-5 h-3 rounded ring-1 ring-slate-700`} loading="lazy" />}
+                    <span className={`font-medium text-slate-200`}>{baseCurrency}</span>
+                    <span className={'text-slate-500'}>→</span>
+                    {targetFlagUrl && <img src={targetFlagUrl} alt={targetCurrency} className={`w-5 h-3 rounded ring-1 ring-slate-700`} loading="lazy" />}
+                    <span className={`font-medium text-slate-200`}>{targetCurrency}</span>
                   </td>
-                  <td className="px-4 py-3 text-right font-mono tabular-nums text-slate-100">
+                  <td className={`px-4 py-3 text-right font-mono tabular-nums text-slate-100`}>
                     {formatRate(item.rate)}
                     {getRateChangeIcon(index)}
                   </td>
