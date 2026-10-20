@@ -1,29 +1,55 @@
-const BASE_URL = 'https://api.frankfurter.app';
+const PRIMARY_BASE_URL = 'https://api.frankfurter.dev/v1';
+const FALLBACK_BASE_URL = 'https://api.frankfurter.app';
 
-async function fetchJson(url) {
+let currentBaseUrl = PRIMARY_BASE_URL;
+
+async function fetchJson(url, isFallbackAttempt = false) {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text().catch(() => '');
+      throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('API request failed:', error);
+    console.error(`[currencyService] Request failed:`, {
+      url,
+      baseUrl: currentBaseUrl,
+      isFallbackAttempt,
+      error: error.message,
+      stack: error.stack,
+    });
+
+    if (!isFallbackAttempt && currentBaseUrl === PRIMARY_BASE_URL) {
+      console.warn('[currencyService] Trying fallback URL:', FALLBACK_BASE_URL);
+      currentBaseUrl = FALLBACK_BASE_URL;
+      const fallbackUrl = url.replace(PRIMARY_BASE_URL, FALLBACK_BASE_URL);
+      return fetchJson(fallbackUrl, true);
+    }
+
     throw error;
   }
 }
 
+function buildUrl(endpoint, params = {}) {
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      searchParams.append(key, value);
+    }
+  });
+  const queryString = searchParams.toString();
+  return `${currentBaseUrl}${endpoint}${queryString ? `?${queryString}` : ''}`;
+}
+
 export async function getCurrencies() {
-  const data = await fetchJson(`${BASE_URL}/currencies`);
+  const url = buildUrl('/currencies');
+  const data = await fetchJson(url);
   return data;
 }
 
 export async function getLatestRates(base = 'USD', symbols = '') {
-  const params = new URLSearchParams();
-  if (base) params.append('base', base);
-  if (symbols) params.append('symbols', symbols);
-
-  const url = `${BASE_URL}/latest?${params.toString()}`;
+  const url = buildUrl('/latest', { base, symbols });
   const data = await fetchJson(url);
 
   return {
@@ -38,11 +64,7 @@ export async function getHistoricalRates(startDate, endDate, base = 'USD', symbo
     throw new Error('startDate and endDate are required');
   }
 
-  const params = new URLSearchParams();
-  if (base) params.append('base', base);
-  if (symbols) params.append('symbols', symbols);
-
-  const url = `${BASE_URL}/${startDate}..${endDate}?${params.toString()}`;
+  const url = buildUrl(`/${startDate}..${endDate}`, { base, symbols });
   const data = await fetchJson(url);
 
   return {
