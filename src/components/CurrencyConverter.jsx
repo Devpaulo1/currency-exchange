@@ -3,18 +3,18 @@ import { ArrowLeftRight, Loader2 } from 'lucide-react';
 
 export function CurrencyConverter({
   amount,
-  updateAmount,
+  setAmount,
   baseCurrency,
+  setBaseCurrency,
   targetCurrency,
+  setTargetCurrency,
   currencies,
-  rate,
-  rateDate,
+  exchangeRate,
+  date,
   loading,
   error,
   swapCurrencies,
   convertedAmount,
-  updateBaseCurrency,
-  updateTargetCurrency,
 }) {
   const amountRef = useRef(null);
   const swapRef = useRef(null);
@@ -29,11 +29,6 @@ export function CurrencyConverter({
       swapRef.current?.classList.remove('rotate-180');
     }, 300);
     swapCurrencies();
-  };
-
-  const formatCurrency = (code) => {
-    const name = currencies[code];
-    return name ? `${code} - ${name}` : code;
   };
 
   const formatRate = (rateValue) => {
@@ -70,7 +65,7 @@ export function CurrencyConverter({
               step="0.01"
               min="0"
               value={amount}
-              onChange={(e) => updateAmount(e.target.value)}
+              onChange={(e) => setAmount(e.target.value)}
               className="w-full pl-10 pr-4 py-3.5 text-2xl font-medium text-slate-900 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all placeholder:text-slate-400"
               placeholder="0.00"
               aria-label="Valor a converter"
@@ -86,7 +81,7 @@ export function CurrencyConverter({
             <select
               id="baseCurrency"
               value={baseCurrency}
-              onChange={(e) => updateBaseCurrency(e.target.value)}
+              onChange={(e) => setBaseCurrency(e.target.value)}
               className="w-full px-4 py-3 text-slate-900 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all appearance-none cursor-pointer"
             >
               {Object.entries(currencies).map(([code, name]) => (
@@ -116,7 +111,7 @@ export function CurrencyConverter({
             <select
               id="targetCurrency"
               value={targetCurrency}
-              onChange={(e) => updateTargetCurrency(e.target.value)}
+              onChange={(e) => setTargetCurrency(e.target.value)}
               className="w-full px-4 py-3 text-slate-900 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all appearance-none cursor-pointer"
             >
               {Object.entries(currencies).map(([code, name]) => (
@@ -141,14 +136,14 @@ export function CurrencyConverter({
           <div className="flex items-center justify-between pt-2 border-t border-slate-100">
             <span className="text-slate-500 text-sm">Taxa de câmbio</span>
             <span className="font-mono text-lg font-semibold text-slate-900">
-              1 {baseCurrency} = {formatRate(rate)} {targetCurrency}
+              1 {baseCurrency} = {formatRate(exchangeRate)} {targetCurrency}
             </span>
           </div>
-          {rateDate && (
+          {date && (
             <div className="flex items-center justify-between text-sm text-slate-500">
               <span>Cotação de</span>
-              <time dateTime={rateDate} className="font-mono">
-                {new Date(rateDate).toLocaleDateString('pt-BR', {
+              <time dateTime={date} className="font-mono">
+                {new Date(date).toLocaleDateString('pt-BR', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
@@ -168,13 +163,13 @@ export function CurrencyConverter({
                 {formatAmount(convertedAmount)} {targetCurrency}
               </p>
               <p className="text-slate-400 text-sm">
-                {formatAmount(amount)} {baseCurrency} × {formatRate(rate)}
+                {formatAmount(amount)} {baseCurrency} × {formatRate(exchangeRate)}
               </p>
             </div>
           </div>
         )}
 
-        {!rate && !loading && !error && (
+        {!exchangeRate && !loading && !error && (
           <div className="mt-6 pt-6 border-t border-slate-100 text-center text-slate-500">
             <p className="text-sm">Selecione as moedas para ver a conversão</p>
           </div>
