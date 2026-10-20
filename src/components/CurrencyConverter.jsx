@@ -123,7 +123,7 @@ export function CurrencyConverter({
                 min="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className={`w-full pl-12 pr-4 py-4 text-3xl font-semibold text-slate-100 
+                className={`w-full pl-16 pr-4 py-4 text-3xl font-semibold text-slate-100 
                   bg-slate-900/70 backdrop-blur-sm border border-slate-700/50 
                   rounded-xl 
                   focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 
