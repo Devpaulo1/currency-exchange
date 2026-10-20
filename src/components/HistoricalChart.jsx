@@ -12,10 +12,13 @@ import { Loader2 } from 'lucide-react';
 
 const PERIOD_OPTIONS = [
   { value: '7d', label: '7 dias' },
+  { value: '15d', label: '15 dias' },
   { value: '30d', label: '30 dias' },
-  { value: '90d', label: '90 dias' },
-  { value: '180d', label: '180 dias' },
+  { value: '3m', label: '3 meses' },
+  { value: '6m', label: '6 meses' },
   { value: '1y', label: '1 ano' },
+  { value: '5y', label: '5 anos' },
+  { value: '10y', label: '10 anos' },
 ];
 
 function formatXAxisTick(value) {

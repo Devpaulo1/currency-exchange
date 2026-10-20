@@ -1,6 +1,7 @@
 import { useCurrency } from './hooks/useCurrency';
 import { CurrencyConverter } from './components/CurrencyConverter';
 import { HistoricalChart } from './components/HistoricalChart';
+import { HistoricalTable } from './components/HistoricalTable';
 
 function App() {
   const {
@@ -26,6 +27,11 @@ function App() {
           historicalLoading={historicalLoading}
           period={period}
           setPeriod={setPeriod}
+          baseCurrency={baseCurrency}
+          targetCurrency={targetCurrency}
+        />
+        <HistoricalTable
+          historicalData={historicalData}
           baseCurrency={baseCurrency}
           targetCurrency={targetCurrency}
         />

@@ -3,10 +3,13 @@ import { getCurrencies, getLatestRates, getHistoricalRates } from '../services/c
 
 const PERIOD_DAYS = {
   '7d': 7,
+  '15d': 15,
   '30d': 30,
-  '90d': 90,
-  '180d': 180,
+  '3m': 90,
+  '6m': 180,
   '1y': 365,
+  '5y': 1825,
+  '10y': 3650,
 };
 
 function getDateRange(period) {
