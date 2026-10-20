@@ -13,6 +13,8 @@ export function CurrencyConverter({
   error,
   swapCurrencies,
   convertedAmount,
+  updateBaseCurrency,
+  updateTargetCurrency,
 }) {
   const amountRef = useRef(null);
   const swapRef = useRef(null);
@@ -84,12 +86,7 @@ export function CurrencyConverter({
             <select
               id="baseCurrency"
               value={baseCurrency}
-              onChange={(e) => e.target.dispatchEvent(new Event('change', { bubbles: true }))}
-              onChange={(e) => {
-                const event = new Event('change', { bubbles: true });
-                Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set.call(e.target, e.target.value);
-                e.target.dispatchEvent(event);
-              }}
+              onChange={(e) => updateBaseCurrency(e.target.value)}
               className="w-full px-4 py-3 text-slate-900 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all appearance-none cursor-pointer"
             >
               {Object.entries(currencies).map(([code, name]) => (
@@ -119,11 +116,7 @@ export function CurrencyConverter({
             <select
               id="targetCurrency"
               value={targetCurrency}
-              onChange={(e) => {
-                const event = new Event('change', { bubbles: true });
-                Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set.call(e.target, e.target.value);
-                e.target.dispatchEvent(event);
-              }}
+              onChange={(e) => updateTargetCurrency(e.target.value)}
               className="w-full px-4 py-3 text-slate-900 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all appearance-none cursor-pointer"
             >
               {Object.entries(currencies).map(([code, name]) => (
