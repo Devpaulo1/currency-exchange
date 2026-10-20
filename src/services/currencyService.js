@@ -42,6 +42,26 @@ function buildUrl(endpoint, params = {}) {
   return `${currentBaseUrl}${endpoint}${queryString ? `?${queryString}` : ''}`;
 }
 
+function generateMockHistory(startDate, endDate, base, symbols) {
+  const rates = {};
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const current = new Date(start);
+
+  while (current <= end) {
+    const dateStr = current.toISOString().split('T')[0];
+    rates[dateStr] = { [symbols]: 1 };
+    current.setDate(current.getDate() + 1);
+  }
+
+  return {
+    base,
+    start_date: startDate,
+    end_date: endDate,
+    rates,
+  };
+}
+
 export async function getCurrencies() {
   const url = buildUrl('/currencies');
   const data = await fetchJson(url);
@@ -49,6 +69,19 @@ export async function getCurrencies() {
 }
 
 export async function getLatestRates(base = 'USD', symbols = '') {
+  if (base && symbols && base === symbols) {
+    const today = new Date().toISOString().split('T')[0];
+    return {
+      base,
+      date: today,
+      rates: { [symbols]: 1 },
+    };
+  }
+
+  if (!symbols) {
+    throw new Error('symbols parameter is required');
+  }
+
   const url = buildUrl('/latest', { base, symbols });
   const data = await fetchJson(url);
 
@@ -62,6 +95,14 @@ export async function getLatestRates(base = 'USD', symbols = '') {
 export async function getHistoricalRates(startDate, endDate, base = 'USD', symbols = '') {
   if (!startDate || !endDate) {
     throw new Error('startDate and endDate are required');
+  }
+
+  if (base && symbols && base === symbols) {
+    return generateMockHistory(startDate, endDate, base, symbols);
+  }
+
+  if (!symbols) {
+    throw new Error('symbols parameter is required');
   }
 
   const url = buildUrl(`/${startDate}..${endDate}`, { base, symbols });

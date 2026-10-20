@@ -89,12 +89,16 @@ export function useCurrency() {
   }, [fetchCurrencies]);
 
   useEffect(() => {
-    fetchLatestRate();
-  }, [fetchLatestRate]);
+    if (baseCurrency && targetCurrency) {
+      fetchLatestRate();
+    }
+  }, [fetchLatestRate, baseCurrency, targetCurrency]);
 
   useEffect(() => {
-    fetchHistoricalData();
-  }, [fetchHistoricalData]);
+    if (baseCurrency && targetCurrency) {
+      fetchHistoricalData();
+    }
+  }, [fetchHistoricalData, baseCurrency, targetCurrency]);
 
   const convertedAmount = rate ? (parseFloat(amount) * rate).toFixed(4) : null;
 
@@ -110,13 +114,13 @@ export function useCurrency() {
     date: rateDate,
     historicalData,
     selectedPeriod,
+    setPeriod: setSelectedPeriod,
     loading,
     historicalLoading,
     error,
     convertedAmount,
     swapCurrencies,
     updateAmount: setAmount,
-    updatePeriod: setSelectedPeriod,
     updateBaseCurrency: setBaseCurrency,
     updateTargetCurrency: setTargetCurrency,
     refetch: fetchLatestRate,
