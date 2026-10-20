@@ -146,10 +146,16 @@ export function CurrencyConverter({
                   />
                 )}
                 <select
+                  key={baseCurrency}
                   value={baseCurrency}
                   onChange={(e) => setBaseCurrency(e.target.value)}
                   className={`w-full font-medium text-sm py-3 pl-11 pr-8 rounded-xl border focus:border-emerald-500 focus:outline-none appearance-none cursor-pointer transition-colors ${selectClasses}`}
                 >
+                  {Object.keys(currencies).length === 0 && (
+                    <option key={baseCurrency} value={baseCurrency} className={optionClasses}>
+                      {baseCurrency} — Carregando...
+                    </option>
+                  )}
                   {Object.entries(currencies).map(([code, name]) => (
                     <option key={code} value={code} className={optionClasses}>
                       {code} — {name}
@@ -188,10 +194,16 @@ export function CurrencyConverter({
                   />
                 )}
                 <select
+                  key={targetCurrency}
                   value={targetCurrency}
                   onChange={(e) => setTargetCurrency(e.target.value)}
                   className={`w-full font-medium text-sm py-3 pl-11 pr-8 rounded-xl border focus:border-emerald-500 focus:outline-none appearance-none cursor-pointer transition-colors ${selectClasses}`}
                 >
+                  {Object.keys(currencies).length === 0 && (
+                    <option key={targetCurrency} value={targetCurrency} className={optionClasses}>
+                      {targetCurrency} — Carregando...
+                    </option>
+                  )}
                   {Object.entries(currencies).map(([code, name]) => (
                     <option key={code} value={code} className={optionClasses}>
                       {code} — {name}

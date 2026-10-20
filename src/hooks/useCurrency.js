@@ -23,8 +23,8 @@ function getDateRange(period) {
 }
 
 export function useCurrency() {
-  const [baseCurrency, setBaseCurrency] = useState('USD');
-  const [targetCurrency, setTargetCurrency] = useState('BRL');
+  const [baseCurrency, setBaseCurrency] = useState('AUD');
+  const [targetCurrency, setTargetCurrency] = useState('AUD');
   const [amount, setAmount] = useState('1');
   const [currencies, setCurrencies] = useState({});
   const [rate, setRate] = useState(null);
