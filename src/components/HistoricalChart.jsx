@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useContext } from 'react';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -9,6 +9,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { Loader2 } from 'lucide-react';
+import { LanguageContext } from '../context/LanguageContext';
 import { getFlagUrl, hasFlag } from '../utils/currencyFlags';
 
 const PERIOD_OPTIONS = [
@@ -90,9 +91,7 @@ const THEME_COLORS = {
     periodActiveBg: 'bg-emerald-500/20',
     periodActiveText: 'text-emerald-300',
     periodActiveBorder: 'border-emerald-500/30',
-    periodInactiveText: 'text-slate-400',
-    periodInactiveHoverBg: 'bg-slate-800/50',
-    periodInactiveHoverText: 'text-slate-100',
+    periodInactive: 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50',
   },
 };
 
@@ -104,6 +103,7 @@ export function HistoricalChart({
   setPeriod,
   historicalLoading,
 }) {
+  const { t } = useContext(LanguageContext);
   const colors = THEME_COLORS.dark;
 
   const baseFlagUrl = hasFlag(baseCurrency) ? getFlagUrl(baseCurrency) : null;
@@ -136,7 +136,7 @@ export function HistoricalChart({
       <div className={`absolute inset-0 pointer-events-none bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5`} />
       
       <h2 id="chart-title" className="sr-only">
-        Gráfico histórico {baseCurrency} → {targetCurrency}
+        {t('chartTitle', { from: baseCurrency, to: targetCurrency })}
       </h2>
 
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -146,7 +146,7 @@ export function HistoricalChart({
           </div>
           <div className="min-w-0 flex items-center gap-2">
             <h3 className={`text-lg font-semibold ${colors.textPrimary} truncate`}>
-              Histórico
+              {t('chartTitle', { from: baseCurrency, to: targetCurrency }).replace('Gráfico histórico ', '').replace('Historical Chart ', '').replace('Gráfico Histórico ', '')}
             </h3>
             <div className="flex-shrink-0 flex items-center gap-1">
               {baseFlagUrl && <img src={baseFlagUrl} alt={baseCurrency} className="w-5 h-3 rounded flex-shrink-0" loading="lazy" />}
@@ -168,7 +168,7 @@ export function HistoricalChart({
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${
                 period === opt.value
                   ? `${colors.periodActiveBg} ${colors.periodActiveText} ${colors.periodActiveBorder} shadow-lg`
-                  : `${colors.periodInactiveText} hover:${colors.periodInactiveHoverText} hover:${colors.periodInactiveHoverBg}`
+                  : colors.periodInactive
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {opt.label}
@@ -190,7 +190,7 @@ export function HistoricalChart({
         {!hasData && !historicalLoading && (
           <div className="absolute inset-0 flex items-center justify-center">
             <p className="text-sm" style={{ color: colors.emptyColor }}>
-              Sem dados históricos para o período selecionado
+              {t('noChartData')}
             </p>
           </div>
         )}

@@ -2,9 +2,11 @@ import { useCurrency } from './hooks/useCurrency';
 import { CurrencyConverter } from './components/CurrencyConverter';
 import { HistoricalChart } from './components/HistoricalChart';
 import { HistoricalTable } from './components/HistoricalTable';
-import { Wifi, WifiOff, Shield, Loader2 } from 'lucide-react';
+import { Wifi, WifiOff, Shield, Loader2, Globe } from 'lucide-react';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 function AppContent() {
+  const { language, setLanguage, t } = useLanguage();
   const {
     historicalData,
     historicalLoading,
@@ -21,26 +23,24 @@ function AppContent() {
   const getApiStatusConfig = () => {
     switch (apiStatus) {
       case 'success':
-        return { icon: Wifi, color: 'text-emerald-400', label: 'Conectado', bg: 'bg-emerald-500/10 border-emerald-500/20' };
+        return { icon: Wifi, color: 'text-emerald-400', label: t('connected'), bg: 'bg-emerald-500/10 border-emerald-500/20' };
       case 'error':
-        return { icon: WifiOff, color: 'text-red-400', label: 'Erro API', bg: 'bg-red-500/10 border-red-500/20' };
+        return { icon: WifiOff, color: 'text-red-400', label: t('apiError'), bg: 'bg-red-500/10 border-red-500/20' };
       case 'loading':
-        return { icon: Loader2, color: 'text-emerald-400 animate-spin', label: 'Conectando...', bg: 'bg-emerald-500/10 border-emerald-500/20' };
+        return { icon: Loader2, color: 'text-emerald-400 animate-spin', label: t('connecting'), bg: 'bg-emerald-500/10 border-emerald-500/20' };
       default:
-        return { icon: Shield, color: 'text-slate-500', label: 'Aguardando', bg: 'bg-slate-800/50 border-slate-700/50' };
+        return { icon: Shield, color: 'text-slate-500', label: t('waiting'), bg: 'bg-slate-800/50 border-slate-700/50' };
     }
   };
 
-  const ApiStatus = () => {
-    const config = getApiStatusConfig();
-    const Icon = config.icon;
-    return (
-      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${config.bg} ${config.color} transition-all`}>
-        <Icon className="w-4 h-4" />
-        <span className="text-xs font-medium">{config.label}</span>
-      </div>
-    );
-  };
+  const languages = [
+    { code: 'pt', label: 'PT', flag: '🇧🇷' },
+    { code: 'en', label: 'EN', flag: '🇺🇸' },
+    { code: 'es', label: 'ES', flag: '🇪🇸' },
+  ];
+
+  const statusConfig = getApiStatusConfig();
+  const StatusIcon = statusConfig.icon;
 
   return (
     <div className={`min-h-screen transition-colors duration-500 bg-[#060913]`}>
@@ -62,19 +62,52 @@ function AppContent() {
                 className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500/50 shadow-md"
               />
               <div>
-                <h1 className={`text-xl font-bold tracking-tight text-slate-100`}>Currency Exchange</h1>
-                <p className={`text-xs text-slate-400`}>Taxas em tempo real via Frankfurter API</p>
+                <h1 className={`text-xl font-bold tracking-tight text-slate-100`}>{t('appTitle')}</h1>
+                <p className={`text-xs text-slate-400`}>{t('appSubtitle')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <ApiStatus />
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${statusConfig.bg} ${statusConfig.color} transition-all`}>
+                <StatusIcon className="w-4 h-4" />
+                <span className="text-xs font-medium">{statusConfig.label}</span>
+              </div>
+              
+              {/* Language Selector */}
+              <div className="relative group">
+                <button
+                  className={`relative p-2 rounded-xl transition-all flex items-center gap-1.5 bg-slate-800/50 border border-slate-700/50 text-slate-400 hover:text-slate-100 hover:border-emerald-500/50 hover:bg-emerald-500/10`}
+                  aria-label={t('languageSelector')}
+                >
+                  <Globe className="w-5 h-5" />
+                  <span className="text-xs font-medium">{language.toUpperCase()}</span>
+                </button>
+                <div className={`absolute right-0 top-full mt-2 w-36 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 bg-slate-900 border border-slate-700`}>
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => setLanguage(lang.code)}
+                      className={`w-full px-3 py-2 text-sm font-medium flex items-center gap-2 transition-colors ${language === lang.code ? ('bg-emerald-500/20 text-emerald-400') : ('text-slate-300 hover:bg-slate-800/50')}`}
+                    >
+                      <span>{lang.flag}</span>
+                      <span>{lang.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
       </header>
 
       <main className="relative max-w-5xl mx-auto px-4 py-8 space-y-6 pb-12">
-        <CurrencyConverter {...currency} />
+        <CurrencyConverter
+          {...currency}
+          baseCurrency={baseCurrency}
+          targetCurrency={targetCurrency}
+          loading={loading}
+          error={error}
+        />
         <HistoricalChart
           historicalData={historicalData}
           historicalLoading={historicalLoading}
@@ -90,12 +123,20 @@ function AppContent() {
         />
         
         <footer className={`relative z-10 text-center text-xs py-4 border-t text-slate-500 border-slate-800/50`}>
-          <p>Dados fornecidos por <a href="https://api.frankfurter.dev" target="_blank" rel="noopener noreferrer" className="underline hover:text-emerald-400 transition-colors">Frankfurter API</a></p>
-          <p className="mt-1">Desenvolvido com React + Tailwind v4 + Recharts</p>
+          <p>{t('footerApi')}</p>
+          <p className="mt-1">{t('footerTech')}</p>
         </footer>
       </main>
     </div>
   );
 }
 
-export default AppContent;
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+}
+
+export default App;

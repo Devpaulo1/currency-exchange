@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useContext } from 'react';
 import { ChevronUp, ChevronDown, ChevronsUpDown, Filter, FilterX, Download } from 'lucide-react';
 import { exportToCSV } from '../utils/csvExporter';
+import { LanguageContext } from '../context/LanguageContext';
 import { getFlagUrl, hasFlag } from '../utils/currencyFlags';
 
 function formatDate(dateStr) {
@@ -26,6 +27,7 @@ export function HistoricalTable({
   baseCurrency,
   targetCurrency,
 }) {
+  const { t } = useContext(LanguageContext);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [filters, setFilters] = useState({
     dateFrom: '',
@@ -105,13 +107,13 @@ export function HistoricalTable({
 
   const handleExport = () => {
     if (filteredData.length === 0) {
-      alert('Nenhum dado para exportar. Ajuste os filtros ou selecione outro período.');
+      alert(t('noFilteredData'));
       return;
     }
     exportToCSV(filteredData, baseCurrency, targetCurrency);
   };
 
-  const SortIcon = ({ columnKey }) => {
+  const renderSortIcon = (columnKey) => {
     if (sortConfig.key !== columnKey) return <ChevronsUpDown className={`w-4 h-4 text-slate-500`} />;
     return sortConfig.direction === 'asc' 
       ? <ChevronUp className="w-4 h-4 text-emerald-500" /> 
@@ -133,8 +135,8 @@ export function HistoricalTable({
     const prevRate = filteredData[index - 1]?.rate;
     const currRate = filteredData[index]?.rate;
     if (!prevRate || !currRate) return null;
-    if (currRate > prevRate) return <span className={`ml-1 text-emerald-400`}>▲</span>;
-    if (currRate < prevRate) return <span className={`ml-1 text-red-400`}>▼</span>;
+    if (currRate > prevRate) return <span className={`ml-1 text-emerald-400`}>{t('variationUp')}</span>;
+    if (currRate < prevRate) return <span className={`ml-1 text-red-400`}>{t('variationDown')}</span>;
     return null;
   };
 
@@ -145,7 +147,7 @@ export function HistoricalTable({
     >
       <div className={`absolute inset-0 pointer-events-none bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5`} />
       
-      <h2 id="table-title" className="sr-only">Tabela de Cotações Históricas</h2>
+      <h2 id="table-title" className="sr-only">{t('tableTitle')}</h2>
 
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
@@ -154,9 +156,9 @@ export function HistoricalTable({
             <span className={'text-slate-300'}>→</span>
             {targetFlagUrl && <img src={targetFlagUrl} alt={targetCurrency} className="w-5 h-3 rounded ring-1" loading="lazy" />}
           </div>
-          <h3 className={`text-lg font-semibold text-slate-100`}>Tabela de Cotações</h3>
+          <h3 className={`text-lg font-semibold text-slate-100`}>{t('tableTitle')}</h3>
           <span className={`px-2 py-0.5 text-xs font-mono rounded bg-slate-900/50 border border-slate-700/50 text-slate-400`}>
-            {filteredData.length} registro{filteredData.length !== 1 ? 's' : ''}
+            {t('recordsCount', { count: filteredData.length, plural: filteredData.length !== 1 ? 's' : '' })}
           </span>
         </div>
 
@@ -171,7 +173,7 @@ export function HistoricalTable({
             }`}
           >
             <Filter className="w-4 h-4" />
-            Filtros
+            {t('filtersBtn')}
           </button>
 
           <button
@@ -181,7 +183,7 @@ export function HistoricalTable({
             className="px-3 py-1.5 text-sm font-medium rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20"
           >
             <Download className="w-4 h-4" />
-            Exportar CSV
+            {t('exportBtn')}
           </button>
         </div>
       </div>
@@ -190,7 +192,7 @@ export function HistoricalTable({
         <div className={`relative z-10 mb-6 p-4 rounded-xl space-y-3 bg-slate-900/50 backdrop-blur-sm border border-slate-700/30`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
-              <label className={`block text-xs font-medium mb-1 text-slate-400`}>Data Inicial</label>
+              <label className={`block text-xs font-medium mb-1 text-slate-400`}>{t('dateFrom')}</label>
               <input
                 type="date"
                 value={filters.dateFrom}
@@ -199,7 +201,7 @@ export function HistoricalTable({
               />
             </div>
             <div>
-              <label className={`block text-xs font-medium mb-1 text-slate-400`}>Data Final</label>
+              <label className={`block text-xs font-medium mb-1 text-slate-400`}>{t('dateTo')}</label>
               <input
                 type="date"
                 value={filters.dateTo}
@@ -208,25 +210,25 @@ export function HistoricalTable({
               />
             </div>
             <div>
-              <label className={`block text-xs font-medium mb-1 text-slate-400`}>Cotação Mínima</label>
+              <label className={`block text-xs font-medium mb-1 text-slate-400`}>{t('rateMin')}</label>
               <input
                 type="number"
                 step="0.0001"
                 value={filters.rateMin}
                 onChange={(e) => handleFilterChange('rateMin', e.target.value)}
                 className={`w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all`}
-                placeholder="Ex: 5.0"
+                placeholder={t('rateMinPlaceholder')}
               />
             </div>
             <div>
-              <label className={`block text-xs font-medium mb-1 text-slate-400`}>Cotação Máxima</label>
+              <label className={`block text-xs font-medium mb-1 text-slate-400`}>{t('rateMax')}</label>
               <input
                 type="number"
                 step="0.0001"
                 value={filters.rateMax}
                 onChange={(e) => handleFilterChange('rateMax', e.target.value)}
                 className={`w-full px-3 py-2 text-sm rounded-lg bg-slate-900/50 border border-slate-700/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all`}
-                placeholder="Ex: 6.0"
+                placeholder={t('rateMaxPlaceholder')}
               />
             </div>
           </div>
@@ -237,7 +239,7 @@ export function HistoricalTable({
               className={`text-sm flex items-center gap-1 transition-colors text-slate-400 hover:text-emerald-400`}
             >
               <FilterX className="w-4 h-4" />
-              Limpar filtros
+              {t('clearFilters')}
             </button>
           )}
         </div>
@@ -251,16 +253,16 @@ export function HistoricalTable({
                 className={`px-4 py-3 text-left font-medium cursor-pointer select-none flex items-center gap-1 transition-colors text-slate-400 hover:text-emerald-400`}
                 onClick={() => handleSort('date')}
               >
-                Data <SortIcon columnKey="date" />
+                {t('sortDate')} {renderSortIcon('date')}
               </th>
-              <th className={`px-4 py-3 text-left font-medium text-slate-400`}>Par</th>
+              <th className={`px-4 py-3 text-left font-medium text-slate-400`}>{t('sortPair')}</th>
               <th 
                 className={`px-4 py-3 text-right font-medium cursor-pointer select-none flex items-center justify-end gap-1 transition-colors text-slate-400 hover:text-emerald-400`}
                 onClick={() => handleSort('rate')}
               >
-                Cotação <SortIcon columnKey="rate" />
+                {t('sortRate')} {renderSortIcon('rate')}
               </th>
-              <th className={`px-4 py-3 text-center font-medium w-16 text-slate-400`}>Variação</th>
+              <th className={`px-4 py-3 text-center font-medium w-16 text-slate-400`}>{t('sortVariation')}</th>
             </tr>
           </thead>
           <tbody className={`divide-y divide-slate-700/20`}>
@@ -268,8 +270,8 @@ export function HistoricalTable({
               <tr>
                 <td colSpan={4} className={`px-4 py-12 text-center text-slate-500`}>
                   {historicalData.length === 0 
-                    ? 'Sem dados históricos para o período selecionado' 
-                    : 'Nenhum registro encontrado com os filtros atuais'}
+                    ? t('noTableData') 
+                    : t('noFilteredData')}
                 </td>
               </tr>
             ) : (

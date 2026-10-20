@@ -1,6 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useContext } from 'react';
 import { ArrowLeftRight, Loader2 } from 'lucide-react';
 import { getFlagUrl, hasFlag } from '../utils/currencyFlags';
+import { LanguageContext } from '../context/LanguageContext';
+
 export function CurrencyConverter({
   amount,
   setAmount,
@@ -16,6 +18,7 @@ export function CurrencyConverter({
   swapCurrencies,
   convertedAmount,
 }) {
+  const { t } = useContext(LanguageContext);
   const amountRef = useRef(null);
   const swapRef = useRef(null);
 
@@ -60,7 +63,7 @@ export function CurrencyConverter({
     <div className="space-y-4">
       {/* Main Result Card - Floating Glassmorphic */}
       <section aria-labelledby="result-title" className="relative">
-        <h2 id="result-title" className="sr-only">Resultado da Conversão</h2>
+        <h2 id="result-title" className="sr-only">{t('convertTitle')}</h2>
         
         <div className={`relative bg-slate-900/70 backdrop-blur-md border border-emerald-500/30 shadow-2xl shadow-emerald-500/10 rounded-2xl p-6 overflow-hidden`}>
           <div className={`absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-cyan-500/10`} />
@@ -70,7 +73,7 @@ export function CurrencyConverter({
             {convertedAmount && exchangeRate ? (
               <div className="text-center space-y-2">
                 <p className={`text-xs uppercase tracking-widest font-medium text-slate-400`}>
-                  Valor Convertido
+                  {t('convertedValue')}
                 </p>
                 <div className="space-y-1">
                   <p className="text-5xl sm:text-7xl font-bold tabular-nums bg-gradient-to-r from-emerald-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent animate-pulse">
@@ -86,12 +89,12 @@ export function CurrencyConverter({
               </div>
             ) : !exchangeRate && !loading && !error ? (
               <div className="text-center py-4">
-                <p className={`text-sm text-slate-500`}>Selecione as moedas para ver a conversão</p>
+                <p className={`text-sm text-slate-500`}>{t('noRate')}</p>
               </div>
             ) : loading ? (
               <div className="flex items-center justify-center gap-3 py-4">
                 <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
-                <span className={`text-sm font-medium text-slate-400`}>Atualizando...</span>
+                <span className={`text-sm font-medium text-slate-400`}>{t('loadingRate')}</span>
               </div>
             ) : null}
           </div>
@@ -100,13 +103,13 @@ export function CurrencyConverter({
 
       {/* Input & Currency Selectors */}
       <section aria-labelledby="converter-title" className={`rounded-2xl p-6 shadow-xl bg-slate-900/50 backdrop-blur-md border border-slate-700/50`}>
-        <h2 id="converter-title" className="sr-only">Conversor de Moedas</h2>
+        <h2 id="converter-title" className="sr-only">{t('convertTitle')}</h2>
         
         <div className="space-y-5">
           {/* Amount Input */}
           <div>
             <label htmlFor="amount" className={`block text-xs font-medium mb-1.5 uppercase tracking-wider text-slate-400`}>
-              Valor a Converter
+              {t('amountLabel')}
             </label>
             <div className="relative">
               <span className={`absolute left-4 top-1/2 -translate-y-1/2 font-medium text-lg text-slate-400`}>
@@ -125,8 +128,8 @@ export function CurrencyConverter({
                   rounded-xl 
                   focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 
                   transition-all placeholder:text-slate-500`}
-                placeholder="0,00"
-                aria-label="Valor a converter"
+                placeholder={t('amountPlaceholder')}
+                aria-label={t('amountLabel')}
                 inputMode="decimal"
               />
             </div>
@@ -136,7 +139,7 @@ export function CurrencyConverter({
           <div className="grid grid-cols-[1fr_auto_1fr] gap-4 items-end">
             {/* ORIGEM / DE */}
             <div className="flex-1 min-w-[200px]">
-              <label className={labelClasses}>De</label>
+              <label className={labelClasses}>{t('fromLabel')}</label>
               <div className="relative flex items-center">
                 {baseFlagUrl && (
                   <img
@@ -153,7 +156,7 @@ export function CurrencyConverter({
                 >
                   {Object.keys(currencies).length === 0 && (
                     <option key={baseCurrency} value={baseCurrency} className={optionClasses}>
-                      {baseCurrency} — Carregando...
+                      {baseCurrency} — {t('loadingRate').replace('Atualizando...', '').replace('Updating...', '').replace('Actualizando...', '').trim() || 'Carregando...'}
                     </option>
                   )}
                   {Object.entries(currencies).map(([code, name]) => (
@@ -176,7 +179,7 @@ export function CurrencyConverter({
                 bg-slate-900/70 backdrop-blur-md border border-emerald-500/30 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/50 hover:bg-emerald-500/10 shadow-lg shadow-emerald-500/10
                 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed 
                 focus:outline-none focus:ring-2 focus:ring-emerald-500/50`}
-              aria-label="Inverter moedas"
+              aria-label={t('swapAria')}
             >
               <ArrowLeftRight className="w-5 h-5 transition-transform duration-300" />
               <span className={`absolute inset-0 border rounded-full opacity-50 border-emerald-500/20`} />
@@ -184,7 +187,7 @@ export function CurrencyConverter({
 
             {/* DESTINO / PARA */}
             <div className="flex-1 min-w-[200px]">
-              <label className={labelClasses}>Para</label>
+              <label className={labelClasses}>{t('toLabel')}</label>
               <div className="relative flex items-center">
                 {targetFlagUrl && (
                   <img
@@ -219,7 +222,7 @@ export function CurrencyConverter({
         {error && (
           <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin" />
-            {error}
+            {t('errorLoading')}
           </div>
         )}
 
@@ -227,7 +230,7 @@ export function CurrencyConverter({
         <div className="mt-4 pt-4 border-t">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className={`text-xs uppercase tracking-wider text-slate-400`}>Taxa Atual</span>
+              <span className={`text-xs uppercase tracking-wider text-slate-400`}>{t('currentRate')}</span>
               <div className={`px-3 py-1.5 rounded-lg bg-slate-900/50 backdrop-blur-sm border border-slate-700/50`}>
                 <span className={`font-mono text-lg font-semibold text-slate-100`}>
                   1 {baseCurrency} = {formatRate(exchangeRate)} {targetCurrency}

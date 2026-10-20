@@ -40,7 +40,7 @@ export function useCurrency() {
     try {
       const data = await getCurrencies();
       setCurrencies(data);
-    } catch (err) {
+    } catch {
       setError('Failed to load currencies');
     }
   }, []);
@@ -55,7 +55,7 @@ export function useCurrency() {
       setRate(data.rates?.[targetCurrency] || null);
       setRateDate(data.date);
       setApiStatus('success');
-    } catch (err) {
+    } catch {
       setError('Failed to fetch latest rate');
       setRate(null);
       setApiStatus('error');

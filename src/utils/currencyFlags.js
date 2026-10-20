@@ -77,7 +77,6 @@ const CURRENCY_TO_COUNTRY = {
   SZL: 'sz',
   LSL: 'ls',
   MGA: 'mg',
-  KMF: 'km',
   STD: 'st',
   CVE: 'cv',
   GMD: 'gm',
