@@ -5,6 +5,11 @@
 
 ---
 
+## Protótipo (Figma)
+[Link do protótipo no Figma](https://www.figma.com/design/1lQGsNAGGErvUkbJE6jhFb/Currency-Exchange?node-id=0-1&p=f&t=p2TE1CLP1JS8RRr9-0)
+
+
+
 ## Paleta de Cores — Dark Mode First (Padrão)
 
 ### Base Cyber (Slate Scale Profundo)

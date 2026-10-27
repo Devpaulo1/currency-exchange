@@ -1,0 +1,47 @@
+{
+  "info": {
+    "_postman_id": "a16ef7e4-78ff-476e-95b6-4fc0d87b902d",
+    "name": "Currency Exchange App - Frankfurter API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58260966"
+  },
+  "item": [
+    {
+      "name": "currencies",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://api.frankfurter.dev/v1/currencies",
+          "protocol": "https",
+          "host": [
+            "api",
+            "frankfurter",
+            "dev"
+          ],
+          "path": [
+            "v1",
+            "currencies"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "USD to BRL",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "7 days",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}

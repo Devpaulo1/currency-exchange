@@ -1,4 +1,4 @@
-import { useState, useMemo, useContext } from 'react';
+import { useState, useMemo, useContext, useEffect } from 'react';
 import { ChevronUp, ChevronDown, ChevronsUpDown, Filter, FilterX, Download } from 'lucide-react';
 import { exportToCSV } from '../utils/csvExporter';
 import { LanguageContext } from '../context/LanguageContext';
@@ -36,6 +36,8 @@ export function HistoricalTable({
     rateMax: '',
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   const baseFlagUrl = hasFlag(baseCurrency) ? getFlagUrl(baseCurrency) : null;
   const targetFlagUrl = hasFlag(targetCurrency) ? getFlagUrl(targetCurrency) : null;
@@ -86,6 +88,23 @@ export function HistoricalTable({
 
     return result;
   }, [historicalData, filters, sortConfig]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / itemsPerPage));
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredData.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredData, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [historicalData, filters, sortConfig]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const handleSort = (key) => {
     setSortConfig(prev => ({
@@ -275,36 +294,93 @@ export function HistoricalTable({
                 </td>
               </tr>
             ) : (
-              filteredData.map((item, index) => (
-                <tr 
-                  key={`${item.date}-${index}`} 
-                  className={`transition-all duration-200 hover:bg-emerald-500/5 hover:border-l-4 hover:border-emerald-500/30`}
-                >
-                  <td className={`px-4 py-3 font-mono whitespace-nowrap text-slate-200`}>{formatDate(item.date)}</td>
-                  <td className="px-4 py-3 flex items-center gap-2">
-                    {baseFlagUrl && <img src={baseFlagUrl} alt={baseCurrency} className={`w-5 h-3 rounded ring-1 ring-slate-700`} loading="lazy" />}
-                    <span className={`font-medium text-slate-200`}>{baseCurrency}</span>
-                    <span className={'text-slate-500'}>→</span>
-                    {targetFlagUrl && <img src={targetFlagUrl} alt={targetCurrency} className={`w-5 h-3 rounded ring-1 ring-slate-700`} loading="lazy" />}
-                    <span className={`font-medium text-slate-200`}>{targetCurrency}</span>
-                  </td>
-                  <td className={`px-4 py-3 text-right font-mono tabular-nums text-slate-100`}>
-                    {formatRate(item.rate)}
-                    {getRateChangeIcon(index)}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={`text-xs font-medium ${getRateChangeClass(index)}`}>
-                      {index > 0 && filteredData[index - 1]?.rate ? (
-                        `${((item.rate - filteredData[index - 1].rate) / filteredData[index - 1].rate * 100).toFixed(2)}%`
-                      ) : '—'}
-                    </span>
-                  </td>
-                </tr>
-              ))
+              paginatedData.map((item, index) => {
+                const globalIndex = (currentPage - 1) * itemsPerPage + index;
+                return (
+                  <tr 
+                    key={`${item.date}-${index}`} 
+                    className={`transition-all duration-200 hover:bg-emerald-500/5 hover:border-l-4 hover:border-emerald-500/30`}
+                  >
+                    <td className={`px-4 py-3 font-mono whitespace-nowrap text-slate-200`}>{formatDate(item.date)}</td>
+                    <td className="px-4 py-3 flex items-center gap-2">
+                      {baseFlagUrl && <img src={baseFlagUrl} alt={baseCurrency} className={`w-5 h-3 rounded ring-1 ring-slate-700`} loading="lazy" />}
+                      <span className={`font-medium text-slate-200`}>{baseCurrency}</span>
+                      <span className={'text-slate-500'}>→</span>
+                      {targetFlagUrl && <img src={targetFlagUrl} alt={targetCurrency} className={`w-5 h-3 rounded ring-1 ring-slate-700`} loading="lazy" />}
+                      <span className={`font-medium text-slate-200`}>{targetCurrency}</span>
+                    </td>
+                    <td className={`px-4 py-3 text-right font-mono tabular-nums text-slate-100`}>
+                      {formatRate(item.rate)}
+                      {getRateChangeIcon(globalIndex)}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`text-xs font-medium ${getRateChangeClass(globalIndex)}`}>
+                        {globalIndex > 0 && filteredData[globalIndex - 1]?.rate ? (
+                          `${((item.rate - filteredData[globalIndex - 1].rate) / filteredData[globalIndex - 1].rate * 100).toFixed(2)}%`
+                        ) : '—'}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
+
+      {filteredData.length > itemsPerPage && (
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 pt-4 border-t border-slate-700/40">
+          <p className="text-xs text-slate-400">
+            {t('recordsCount', { count: filteredData.length, plural: filteredData.length !== 1 ? 's' : '' })} • {currentPage}/{totalPages}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 text-xs rounded-lg border border-slate-700/60 text-slate-300 hover:text-emerald-300 hover:border-emerald-500/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              Anterior
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                return (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-8 h-8 text-xs rounded-lg border transition-all ${
+                      currentPage === pageNum
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-lg'
+                        : 'border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 text-xs rounded-lg border border-slate-700/60 text-slate-300 hover:text-emerald-300 hover:border-emerald-500/40 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              Próximo
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

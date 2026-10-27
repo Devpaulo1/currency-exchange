@@ -23,9 +23,51 @@ const PERIOD_OPTIONS = [
   { value: '10y', label: '10a' },
 ];
 
-function formatXAxisTick(value) {
+function formatXAxisTick(value, period) {
   const date = new Date(value);
+
+  if (period === '1y') {
+    return date
+      .toLocaleDateString('pt-BR', { month: 'short' })
+      .replace('.', '')
+      .toUpperCase();
+  }
+
+  if (period === '5y') {
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  }
+
+  if (period === '10y') {
+    return date.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+  }
+
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+}
+
+function getXAxisInterval(period, dataLength) {
+  if (!dataLength) return 'preserveStartEnd';
+
+  if (period === '1y') {
+    return Math.max(1, Math.floor(dataLength / 12));
+  }
+
+  if (period === '5y') {
+    return Math.max(1, Math.floor(dataLength / 10));
+  }
+
+  if (period === '10y') {
+    return Math.max(1, Math.floor(dataLength / 12));
+  }
+
+  if (period === '6m') {
+    return Math.max(1, Math.floor(dataLength / 10));
+  }
+
+  if (period === '3m') {
+    return Math.max(1, Math.floor(dataLength / 9));
+  }
+
+  return 'preserveStartEnd';
 }
 
 function formatYAxisTick(value) {
@@ -222,15 +264,16 @@ export function HistoricalChart({
 
             <XAxis
               dataKey="date"
-              tickFormatter={formatXAxisTick}
+              tickFormatter={(value) => formatXAxisTick(value, period)}
               tick={{
                 fill: colors.axisTick,
-                fontSize: 11,
+                fontSize: period === '1y' || period === '10y' ? 10 : 11,
                 fontFamily: 'monospace',
               }}
               axisLine={{ stroke: colors.axisLine }}
               tickLine={false}
-              interval="preserveStartEnd"
+              interval={getXAxisInterval(period, chartData.length)}
+              minTickGap={period === '1y' ? 8 : 12}
             />
 
             <YAxis
