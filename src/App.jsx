@@ -171,6 +171,7 @@ function AppContent() {
           {...currency}
           baseCurrency={baseCurrency}
           targetCurrency={targetCurrency}
+          currencies={currencies}
           loading={loading}
           error={error}
         />

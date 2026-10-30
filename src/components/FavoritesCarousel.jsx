@@ -10,11 +10,19 @@ export function FavoritesCarousel({ children }) {
   const handlePointerDown = (e) => {
     const container = containerRef.current;
     if (!container) return;
+    const target = e.target;
+    if (target.closest('button') || target.closest('a')) {
+      return;
+    }
     setIsDragging(true);
     setMoved(false);
     setStartX(e.pageX - container.offsetLeft);
     setScrollLeft(container.scrollLeft);
-    container.setPointerCapture?.(e.pointerId);
+    try {
+      container.setPointerCapture?.(e.pointerId);
+    } catch {
+      // ignore
+    }
     container.style.cursor = 'grabbing';
   };
 
@@ -22,6 +30,10 @@ export function FavoritesCarousel({ children }) {
     if (!isDragging) return;
     const container = containerRef.current;
     if (!container) return;
+    const target = e.target;
+    if (target.closest('button') || target.closest('a')) {
+      return;
+    }
     e.preventDefault();
     const x = e.pageX - container.offsetLeft;
     const walk = x - startX;
@@ -35,7 +47,7 @@ export function FavoritesCarousel({ children }) {
     const container = containerRef.current;
     if (!container) return;
     setIsDragging(false);
-    container.style.cursor = 'grab';
+    if (container) container.style.cursor = 'grab';
     try {
       container.releasePointerCapture?.(e.pointerId);
     } catch {
