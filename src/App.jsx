@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { useCurrency } from './hooks/useCurrency';
 import { CurrencyConverter } from './components/CurrencyConverter';
 import { HistoricalChart } from './components/HistoricalChart';
 import { HistoricalTable } from './components/HistoricalTable';
-import { Wifi, WifiOff, Shield, Loader2 } from 'lucide-react';
+import { Wifi, WifiOff, Shield, Loader2, Plus, Search, X } from 'lucide-react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { useFavorites } from './hooks/useFavorites';
+import { FavoriteCard } from './components/FavoriteCard';
+import { getFlagUrl, hasFlag } from './utils/currencyFlags';
 
 function AppContent() {
   const { language, setLanguage, t } = useLanguage();
@@ -17,8 +21,21 @@ function AppContent() {
     apiStatus,
     loading,
     error,
+    currencies,
     ...currency
   } = useCurrency();
+
+  const {
+    favorites,
+    favoriteCodes,
+    addFavorite,
+    removeFavorite,
+    baseCurrency: favBaseCurrency,
+    setBaseCurrency: setFavBaseCurrency,
+  } = useFavorites();
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const getApiStatusConfig = () => {
     switch (apiStatus) {
@@ -97,7 +114,60 @@ function AppContent() {
         </div>
       </header>
 
-      <main className="relative max-w-5xl mx-auto px-4 py-8 space-y-6 pb-12">
+      <main className="relative max-w-6xl mx-auto px-4 py-8 space-y-6 pb-12">
+        {/* Moedas Favoritas Section */}
+        <section className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold text-slate-100">Moedas Favoritas</h2>
+              <p className="text-sm text-slate-400">Acompanhe suas moedas preferidas</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={favBaseCurrency}
+                onChange={(e) => setFavBaseCurrency(e.target.value)}
+                className="px-3 py-2 rounded-xl bg-slate-900/60 border border-slate-700/60 text-slate-100 text-sm focus:outline-none focus:border-emerald-500/50"
+              >
+                {Object.keys(currencies || {}).length > 0 ? (
+                  Object.keys(currencies).map((code) => (
+                    <option key={code} value={code}>
+                      {code}
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="BRL">BRL</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                  </>
+                )}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 transition-colors text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Adicionar moeda</span>
+              </button>
+            </div>
+          </div>
+
+          {favoriteCodes.length === 0 ? (
+            <div className="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-6 text-center">
+              <p className="text-slate-400 text-sm">Nenhuma moeda favorita ainda. Adicione suas moedas preferidas para acompanhá-las.</p>
+            </div>
+          ) : (
+            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+              {favoriteCodes.map((code) => (
+                <div key={code} className="snap-start">
+                  <FavoriteCard code={code} baseCurrency={favBaseCurrency} onRemove={removeFavorite} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
         <CurrencyConverter
           {...currency}
           baseCurrency={baseCurrency}
@@ -124,6 +194,72 @@ function AppContent() {
           <p className="mt-1">{t('footerTech')}</p>
         </footer>
       </main>
+
+      {/* Add Favorite Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setShowAddModal(false)} />
+          <div className="relative w-full max-w-md rounded-2xl border border-slate-700/60 bg-slate-900/95 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-slate-800/60">
+              <h3 className="text-base font-semibold text-slate-100">Adicionar moeda favorita</h3>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/60"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Pesquisar moeda..."
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-950/60 border border-slate-700/60 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50"
+                />
+              </div>
+              <div className="max-h-72 overflow-y-auto space-y-1">
+                {Object.entries(currencies || {})
+                  .filter(([code]) => {
+                    if (favoriteCodes.includes(code)) return false;
+                    if (!searchTerm) return true;
+                    const term = searchTerm.toLowerCase();
+                    const name = currencies[code]?.toLowerCase() || '';
+                    return code.toLowerCase().includes(term) || name.includes(term);
+                  })
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .slice(0, 100)
+                  .map(([code, name]) => {
+                    const flag = hasFlag(code) ? getFlagUrl(code) : null;
+                    return (
+                      <button
+                        key={code}
+                        type="button"
+                        onClick={() => {
+                          addFavorite(code);
+                          setShowAddModal(false);
+                          setSearchTerm('');
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-800/60 text-left transition-colors"
+                      >
+                        {flag ? (
+                          <img src={flag} alt={code} className="w-5 h-3.5 rounded ring-1 ring-slate-700/60" />
+                        ) : (
+                          <div className="w-5 h-3.5 rounded bg-slate-700/60" />
+                        )}
+                        <span className="text-sm font-medium text-slate-100">{code}</span>
+                        <span className="text-xs text-slate-400 truncate">{name}</span>
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -154,12 +154,12 @@ export function CurrencyConverter({
                   onChange={(e) => setBaseCurrency(e.target.value)}
                   className={`w-full font-medium text-sm py-3 pl-11 pr-8 rounded-xl border focus:border-emerald-500 focus:outline-none appearance-none cursor-pointer transition-colors ${selectClasses}`}
                 >
-                  {Object.keys(currencies).length === 0 && (
+                  {Object.keys(currencies || {}).length === 0 && (
                     <option key={baseCurrency} value={baseCurrency} className={optionClasses}>
                       {baseCurrency} — {t('loadingRate').replace('Atualizando...', '').replace('Updating...', '').replace('Actualizando...', '').trim() || 'Carregando...'}
                     </option>
                   )}
-                  {Object.entries(currencies).map(([code, name]) => (
+                  {Object.entries(currencies || {}).map(([code, name]) => (
                     <option key={code} value={code} className={optionClasses}>
                       {code} — {name}
                     </option>
@@ -202,12 +202,12 @@ export function CurrencyConverter({
                   onChange={(e) => setTargetCurrency(e.target.value)}
                   className={`w-full font-medium text-sm py-3 pl-11 pr-8 rounded-xl border focus:border-emerald-500 focus:outline-none appearance-none cursor-pointer transition-colors ${selectClasses}`}
                 >
-                  {Object.keys(currencies).length === 0 && (
+                  {Object.keys(currencies || {}).length === 0 && (
                     <option key={targetCurrency} value={targetCurrency} className={optionClasses}>
                       {targetCurrency} — Carregando...
                     </option>
                   )}
-                  {Object.entries(currencies).map(([code, name]) => (
+                  {Object.entries(currencies || {}).map(([code, name]) => (
                     <option key={code} value={code} className={optionClasses}>
                       {code} — {name}
                     </option>
