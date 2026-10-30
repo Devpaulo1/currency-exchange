@@ -39,4 +39,17 @@
     -moz-appearance: textfield;
     appearance: textfield;
   }
+
+  .favorites-carousel {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .favorites-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .favorites-carousel > * {
+    flex-shrink: 0;
+  }
 }

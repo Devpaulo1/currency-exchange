@@ -37,7 +37,7 @@ export function HistoricalTable({
   });
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 12;
 
   const baseFlagUrl = hasFlag(baseCurrency) ? getFlagUrl(baseCurrency) : null;
   const targetFlagUrl = hasFlag(targetCurrency) ? getFlagUrl(targetCurrency) : null;

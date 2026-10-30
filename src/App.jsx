@@ -8,6 +8,7 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { useFavorites } from './hooks/useFavorites';
 import { FavoriteCard } from './components/FavoriteCard';
 import { getFlagUrl, hasFlag } from './utils/currencyFlags';
+import { FavoritesCarousel } from './components/FavoritesCarousel';
 
 function AppContent() {
   const { language, setLanguage, t } = useLanguage();
@@ -158,13 +159,11 @@ function AppContent() {
               <p className="text-slate-400 text-sm">Nenhuma moeda favorita ainda. Adicione suas moedas preferidas para acompanhá-las.</p>
             </div>
           ) : (
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+            <FavoritesCarousel>
               {favoriteCodes.map((code) => (
-                <div key={code} className="snap-start">
-                  <FavoriteCard code={code} baseCurrency={favBaseCurrency} onRemove={removeFavorite} />
-                </div>
+                <FavoriteCard key={code} code={code} baseCurrency={favBaseCurrency} onRemove={removeFavorite} />
               ))}
-            </div>
+            </FavoritesCarousel>
           )}
         </section>
 
